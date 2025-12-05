@@ -1,0 +1,142 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  // NOTE: Update this to include the paths to all of your component files.
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./App.tsx"],
+  presets: [require("nativewind/preset")],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        // Primary brand colors
+        primary: {
+          50: '#e6f2ff',
+          100: '#cce5ff',
+          200: '#99cbff',
+          300: '#66b0ff',
+          400: '#3396ff',
+          500: '#007bff',
+          600: '#0062cc',
+          700: '#004a99',
+          800: '#003166',
+          900: '#001933',
+          DEFAULT: '#007bff',
+        },
+        // Success (for met goals)
+        success: {
+          50: '#e6f9f0',
+          100: '#ccf3e1',
+          200: '#99e7c3',
+          300: '#66dba5',
+          400: '#33cf87',
+          500: '#00c853',
+          600: '#00a043',
+          700: '#009624',
+          800: '#005018',
+          900: '#00280c',
+          DEFAULT: '#00c853',
+        },
+        // Warning
+        warning: {
+          50: '#fff8e1',
+          100: '#ffecb3',
+          200: '#ffe082',
+          300: '#ffd54f',
+          400: '#ffca28',
+          500: '#ffc107',
+          600: '#ffb300',
+          700: '#f57c00',
+          800: '#e65100',
+          900: '#bf360c',
+          DEFAULT: '#ffc107',
+        },
+        // Error
+        error: {
+          50: '#ffebee',
+          100: '#ffcdd2',
+          200: '#ef9a9a',
+          300: '#e57373',
+          400: '#ef5350',
+          500: '#f44336',
+          600: '#e53935',
+          700: '#d32f2f',
+          800: '#c62828',
+          900: '#b71c1c',
+          DEFAULT: '#f44336',
+        },
+        // Macro colors for nutrition tracking
+        calories: '#FF6B6B',
+        protein: '#4ECDC4',
+        fats: '#FFE66D',
+        carbs: '#95E1D3',
+        fiber: '#A78BFA',
+        sugar: '#FB7185',
+        // Background colors
+        background: {
+          primary: '#FFFFFF',
+          secondary: '#F8F9FA',
+          tertiary: '#F1F3F5',
+          dark: '#1A1A1A',
+          card: '#FFFFFF',
+          muted: '#F3F4F6',
+        },
+        // Text colors
+        text: {
+          primary: '#1F2937',
+          secondary: '#4B5563',
+          muted: '#9CA3AF',
+          inverse: '#FFFFFF',
+        },
+        // Border colors
+        border: {
+          light: '#E5E7EB',
+          DEFAULT: '#D1D5DB',
+          dark: '#9CA3AF',
+        },
+      },
+      fontFamily: {
+        regular: ['System'],
+        medium: ['System'],
+        semibold: ['System'],
+        bold: ['System'],
+      },
+      fontSize: {
+        'xs': ['12px', { lineHeight: '16px' }],
+        'sm': ['14px', { lineHeight: '20px' }],
+        'base': ['16px', { lineHeight: '24px' }],
+        'lg': ['18px', { lineHeight: '28px' }],
+        'xl': ['20px', { lineHeight: '28px' }],
+        '2xl': ['24px', { lineHeight: '32px' }],
+        '3xl': ['30px', { lineHeight: '36px' }],
+        '4xl': ['36px', { lineHeight: '40px' }],
+        '5xl': ['48px', { lineHeight: '1' }],
+      },
+      spacing: {
+        'xs': '4px',
+        'sm': '8px',
+        'md': '16px',
+        'lg': '24px',
+        'xl': '32px',
+        '2xl': '48px',
+        '3xl': '64px',
+      },
+      borderRadius: {
+        'sm': '4px',
+        'DEFAULT': '6px',
+        'md': '8px',
+        'lg': '12px',
+        'xl': '16px',
+        '2xl': '20px',
+        '3xl': '24px',
+      },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+        'sm': '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+        'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.15)',
+        'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+        '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      },
+    },
+  },
+  plugins: [],
+}
