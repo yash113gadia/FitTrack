@@ -1,60 +1,107 @@
-# FitTrack
+<div align="center">
+  <img src="https://img.shields.io/badge/React_Native-0.73-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React Native" />
+  <img src="https://img.shields.io/badge/Expo-SDK_50-000020?style=for-the-badge&logo=expo&logoColor=white" alt="Expo" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Gemini_AI-Powered-8E75B2?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI" />
+</div>
 
-FitTrack is a comprehensive nutrition tracking application built with React Native, Expo, and TypeScript.
+# 🏋️ WholeFit — AI Nutrition Tracker
 
-## Features
+> A comprehensive nutrition tracking mobile app with AI-powered food analysis, barcode scanning, and personalized advice
 
-- **Food Logging**: Scan barcodes, take photos (AI analysis), or manually log food.
-- **Dashboard**: View daily calorie and macro progress.
-- **History**: Review past food logs.
-- **AI Assistant**: Chat with a Gemini-powered assistant for nutrition advice.
-- **Profile**: Manage your goals and settings.
+<div align="center">
+  <img src="https://img.shields.io/badge/Platform-iOS_|_Android-success?style=flat-square" alt="Platform" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" />
+</div>
 
-## Tech Stack
+---
 
-- **Framework**: React Native (Expo SDK 50+)
-- **Language**: TypeScript
-- **Styling**: NativeWind (Tailwind CSS)
-- **Navigation**: React Navigation v6
-- **State Management**: Zustand
-- **Database**: Expo SQLite
-- **API**: Gemini API, OpenFoodFacts
-- **Validation**: Zod
+## ✨ Features
 
-## Prerequisites
+| Feature | Description |
+|---------|-------------|
+| 📸 **AI Food Recognition** | Take a photo, get instant nutritional analysis |
+| 🔍 **Barcode Scanner** | Scan products for instant nutrition data |
+| 📊 **Dashboard** | Track daily calories and macros visually |
+| 📅 **Food History** | Review past meals and patterns |
+| 🤖 **AI Assistant** | Chat with Gemini for personalized nutrition advice |
+| 👤 **Profile** | Set goals and manage preferences |
 
-- Node.js (LTS recommended)
-- npm or yarn
-- Expo Go app on your mobile device or Android/iOS simulator.
+---
 
-## Setup
+## 🛠️ Tech Stack
 
-1.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
+<table>
+<tr>
+<td>
 
-2.  **Configure Environment**:
-    -   Get a Gemini API key from Google AI Studio.
-    -   Update `src/services/geminiAPI.ts` with your API key.
+### Mobile App
+- 📱 **React Native** (Expo SDK 50+)
+- 📘 **TypeScript** for type safety
+- 🎨 **NativeWind** (Tailwind CSS)
+- 🧭 **React Navigation v6**
+- 🗃️ **Zustand** state management
 
-3.  **Run the App**:
-    ```bash
-    npx expo start
-    ```
-    -   Press `a` for Android Emulator.
-    -   Press `i` for iOS Simulator.
-    -   Scan the QR code with Expo Go on your physical device.
+</td>
+<td>
 
-## Project Structure
+### Backend & APIs
+- 🤖 **Gemini AI** for food analysis
+- 🍎 **OpenFoodFacts** API
+- 📦 **Expo SQLite** local storage
+- ✅ **Zod** validation
 
-- `src/components`: Reusable UI components.
-- `src/screens`: Application screens.
-- `src/navigation`: Navigation configuration.
-- `src/services`: API and database services.
-- `src/store`: Global state management (Zustand).
-- `src/utils`: Helper functions and validators.
+</td>
+</tr>
+</table>
 
-## License
+---
 
-MIT
+## 📁 Project Structure
+
+```
+FitTrack/
+├── 📂 src/
+│   ├── components/      # Reusable UI components
+│   ├── screens/         # App screens
+│   ├── navigation/      # Navigation configuration
+│   ├── services/        # API & database services
+│   ├── store/           # Zustand state management
+│   └── utils/           # Helpers & validators
+├── 📂 assets/           # Images & fonts
+├── App.tsx              # Entry point
+└── package.json
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (LTS)
+- Expo Go app on mobile device
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Configure Gemini API key
+# Update src/services/geminiAPI.ts with your key
+
+# Start the app
+npx expo start
+```
+
+| Platform | Action |
+|----------|--------|
+| 📱 Android | Press `a` for emulator |
+| 🍎 iOS | Press `i` for simulator |
+| 📲 Physical Device | Scan QR with Expo Go |
+
+---
+
+## 📝 License
+
+MIT © Yash Gadia
