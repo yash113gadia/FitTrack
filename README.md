@@ -1,107 +1,82 @@
-<div align="center">
-  <img src="https://img.shields.io/badge/React_Native-0.73-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React Native" />
-  <img src="https://img.shields.io/badge/Expo-SDK_50-000020?style=for-the-badge&logo=expo&logoColor=white" alt="Expo" />
-  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Gemini_AI-Powered-8E75B2?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI" />
-</div>
+# Whole Fit
 
-# 🏋️ WholeFit — AI Nutrition Tracker
+AI-powered nutrition tracking app for iOS and Android. Snap a photo of your food, scan a barcode, or log meals manually — Whole Fit handles the rest.
 
-> A comprehensive nutrition tracking mobile app with AI-powered food analysis, barcode scanning, and personalized advice
+## Features
 
-<div align="center">
-  <img src="https://img.shields.io/badge/Platform-iOS_|_Android-success?style=flat-square" alt="Platform" />
-  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" />
-</div>
+- **AI Food Recognition** — Point your camera at any meal and get instant calorie/macro estimates via Google Gemini Vision
+- **Barcode Scanner** — Look up packaged foods through OpenFoodFacts
+- **Daily Dashboard** — Animated progress rings for calories, protein, carbs, and fats
+- **Meal History & Analytics** — Charts and trends over time (Gifted Charts)
+- **AI Nutrition Chatbot** — Ask questions, get meal suggestions, track goals conversationally
+- **AI Body Scan** — Visual body composition estimates from photos
+- **Muscle League** — Gamification system with streaks, XP, and leaderboards
+- **Community Feed** — Share meals and progress with other users
+- **Personal Records** — Track PRs across nutrition and fitness milestones
+- **Reminders** — Push notifications for meals and water intake
+- **Fully Offline** — All data stored locally in SQLite; works without internet
+- **Dark Mode** — Follows system preference or manual toggle
+- **Premium Tier** — Extended AI message limits and advanced features
 
----
+## Tech Stack
 
-## ✨ Features
+| Layer | Tools |
+|-------|-------|
+| Framework | React Native 0.81, Expo SDK 54, TypeScript |
+| Styling | NativeWind (Tailwind for RN), Reanimated |
+| Navigation | React Navigation v6 |
+| State | Zustand + Immer |
+| Database | Expo SQLite |
+| AI | Google Gemini (`@google/generative-ai`) |
+| Food Data | OpenFoodFacts API |
+| Charts | Gifted Charts |
+| Testing | Jest (unit), Detox (E2E) |
 
-| Feature | Description |
-|---------|-------------|
-| 📸 **AI Food Recognition** | Take a photo, get instant nutritional analysis |
-| 🔍 **Barcode Scanner** | Scan products for instant nutrition data |
-| 📊 **Dashboard** | Track daily calories and macros visually |
-| 📅 **Food History** | Review past meals and patterns |
-| 🤖 **AI Assistant** | Chat with Gemini for personalized nutrition advice |
-| 👤 **Profile** | Set goals and manage preferences |
+## Getting Started
 
----
-
-## 🛠️ Tech Stack
-
-<table>
-<tr>
-<td>
-
-### Mobile App
-- 📱 **React Native** (Expo SDK 50+)
-- 📘 **TypeScript** for type safety
-- 🎨 **NativeWind** (Tailwind CSS)
-- 🧭 **React Navigation v6**
-- 🗃️ **Zustand** state management
-
-</td>
-<td>
-
-### Backend & APIs
-- 🤖 **Gemini AI** for food analysis
-- 🍎 **OpenFoodFacts** API
-- 📦 **Expo SQLite** local storage
-- ✅ **Zod** validation
-
-</td>
-</tr>
-</table>
-
----
-
-## 📁 Project Structure
-
-```
-FitTrack/
-├── 📂 src/
-│   ├── components/      # Reusable UI components
-│   ├── screens/         # App screens
-│   ├── navigation/      # Navigation configuration
-│   ├── services/        # API & database services
-│   ├── store/           # Zustand state management
-│   └── utils/           # Helpers & validators
-├── 📂 assets/           # Images & fonts
-├── App.tsx              # Entry point
-└── package.json
-```
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js (LTS)
-- Expo Go app on mobile device
-
-### Installation
+**Prerequisites:** Node.js 18+, an Expo account, and a [Gemini API key](https://ai.google.dev/).
 
 ```bash
-# Install dependencies
+# Clone and install
+git clone <repo-url> && cd FitTrack
 npm install
 
-# Configure Gemini API key
-# Update src/services/geminiAPI.ts with your key
+# Add your Gemini key in app.json → expo.extra.geminiApiKey
+# or update src/services/geminiAPI.ts directly
 
-# Start the app
+# Start dev server
 npx expo start
+
+# Run on device/simulator
+npx expo run:ios       # iOS simulator
+npx expo run:android   # Android emulator
 ```
 
-| Platform | Action |
-|----------|--------|
-| 📱 Android | Press `a` for emulator |
-| 🍎 iOS | Press `i` for simulator |
-| 📲 Physical Device | Scan QR with Expo Go |
+For development builds with native modules (camera, notifications, SQLite):
 
----
+```bash
+npm run dev   # starts with expo-dev-client
+```
 
-## 📝 License
+## Project Structure
 
-MIT © Yash Gadia
+```
+src/
+  components/    UI components (progress rings, food cards, etc.)
+  screens/       All app screens
+  navigation/    Tab and stack navigators
+  services/      Gemini API, OpenFoodFacts, SQLite queries
+  store/         Zustand stores (meals, user, settings)
+  hooks/         Custom React hooks
+  analytics/     Tracking and chart logic
+  constants/     App-wide constants and config
+  types/         TypeScript type definitions
+  utils/         Helpers and validators
+  data/          Static/seed data
+e2e/             Detox end-to-end tests
+assets/          Icons, splash screen, fonts
+```
+
+## License
+
+MIT
