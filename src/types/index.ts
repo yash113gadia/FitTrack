@@ -14,9 +14,30 @@ export interface UserProfile {
   dailyProteinGoal: number;
   dailyFatGoal?: number;
   dailyCarbGoal?: number;
+  profilePhoto?: string; // URI for custom photo or avatar ID
+  profilePhotoType?: 'custom' | 'avatar'; // Type of profile photo
+  lastScanDate?: string; // ISO date string of the last AI body scan
+  muscleLevels: MuscleLevels; // Gamification levels
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
 }
+
+/**
+ * Muscle League Ranks
+ */
+export type LeagueRank = 'Beginner' | 'Intermediate' | 'Elite' | 'Legendary';
+
+/**
+ * Muscle Groups tracked in the league
+ */
+export type MuscleGroup = 'Chest' | 'Back' | 'Arms' | 'Legs' | 'Shoulders';
+
+/**
+ * User's level for each muscle group
+ */
+export type MuscleLevels = {
+  [key in MuscleGroup]: LeagueRank;
+};
 
 /**
  * Represents the daily nutritional goals for a user.
@@ -120,6 +141,20 @@ export interface Reminder {
 }
 
 /**
+ * Represents a personal record entry for an exercise.
+ */
+export interface PersonalRecord {
+  id: number;
+  userId: number;
+  exerciseName: string;
+  weight: number;
+  reps: number;
+  date: string; // YYYY-MM-DD or ISO
+  videoUri?: string;
+  status: 'pending' | 'verified' | 'rejected';
+}
+
+/**
  * A single message within a chatbot session.
  */
 export interface ChatMessage {
@@ -160,6 +195,47 @@ export interface AIFoodEstimate {
   confidence: number; // 0-100
   alternatives?: AIFoodEstimate[];
   reasoning?: string; // Explanation from AI
+}
+
+/**
+ * Represents a social connection between users.
+ */
+export interface Follow {
+  id: number;
+  followerId: number;
+  followingId: number;
+  createdAt: string;
+}
+
+/**
+ * Represents an item in the community feed.
+ */
+export interface FeedItem {
+  id: number;
+  userId: number;
+  userName: string; // Denormalized for easier display
+  userAvatar?: string;
+  type: 'rank_up' | 'pr_verified' | 'streak_milestone';
+  content: {
+    title: string;
+    message: string;
+    data?: any; // e.g., muscle group, new rank, PR details
+  };
+  likes: number;
+  fistBumps: number;
+  createdAt: string;
+  userInteraction?: 'like' | 'fist_bump' | null; // Current user's interaction
+}
+
+/**
+ * Represents an interaction on a feed item.
+ */
+export interface FeedInteraction {
+  id: number;
+  feedItemId: number;
+  userId: number;
+  type: 'like' | 'fist_bump';
+  createdAt: string;
 }
 
 // Utility Types for API Responses

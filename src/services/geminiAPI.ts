@@ -164,6 +164,49 @@ GUIDELINES:
 
 IMPORTANT: Respond with ONLY the JSON object, no other text.`;
 
+const WORKOUT_PLAN_PROMPT = (muscleLevels?: string) => `You are an elite fitness coach and physiologist. Analyze the physique in the provided images (Front and Back).
+
+CONTEXT:
+${muscleLevels ? `Current Muscle League Levels: ${muscleLevels}\n(Legend: Beginner -> Intermediate -> Elite -> Legendary)` : ''}
+
+ANALYSIS:
+1. Estimate Somatotype (Ectomorph, Mesomorph, Endomorph)
+2. Identify Muscle Insertions and proportions
+3. Estimate Current Body Fat %
+4. Identify weak points/areas for improvement. PRIORITIZE muscle groups where the user is 'Beginner' or 'Intermediate' to balance their physique.
+
+GENERATION:
+Based on this analysis, generate a structured workout routine split (Push/Pull/Legs or Upper/Lower) specifically designed to improve this physique.
+
+RESPONSE FORMAT:
+You MUST respond with ONLY a valid JSON object. Use this structure:
+
+{
+  "analysis": {
+    "somatotype": "Mesomorph",
+    "bodyFatEstimate": "15-18%",
+    "strengths": ["Shoulders", "Quadriceps"],
+    "weaknesses": ["Upper Chest", "Hamstrings"],
+    "recommendations": "Focus on upper chest development..."
+  },
+  "schedule": {
+    "split": "Push/Pull/Legs",
+    "frequency": "6 days/week"
+  },
+  "routine": [
+    {
+      "day": "Day 1: Push (Chest/Shoulders/Triceps)",
+      "exercises": [
+        { "name": "Incline Dumbbell Press", "sets": "4", "reps": "8-12", "notes": "Focus on upper chest" },
+        { "name": "Overhead Press", "sets": "3", "reps": "8-12", "notes": "..." }
+      ]
+    }
+    // ... more days
+  ]
+}
+
+IMPORTANT: Respond with ONLY the JSON object.`;
+
 // ============================================================================
 // SERVICE CLASS
 // ============================================================================
@@ -618,6 +661,62 @@ Be precise and realistic. Round to whole numbers.`;
     } catch (error) {
       console.error('Text estimation error:', error);
       return null;
+    }
+  }
+
+  /**
+   * Generate a workout plan from body scan images
+   */
+  async generateWorkoutPlan(
+    frontImageUri: string, 
+    backImageUri: string,
+    muscleLevels?: any
+  ): Promise<{ success: boolean; data?: any; error?: string }> {
+    if (!this.isInitialized) {
+      return { success: false, error: 'Gemini API not configured' };
+    }
+
+    await this.waitForRateLimit();
+
+    try {
+      // Process images
+      const front = await this.imageToBase64(frontImageUri);
+      const back = await this.imageToBase64(backImageUri);
+
+      const imageParts: Part[] = [
+        { inlineData: { data: front.base64, mimeType: front.mimeType } },
+        { inlineData: { data: back.base64, mimeType: back.mimeType } },
+      ];
+
+      // Format muscle levels context string if provided
+      const muscleLevelsStr = muscleLevels ? JSON.stringify(muscleLevels) : undefined;
+
+      // Call API
+      const result = await this.model.generateContent([
+        WORKOUT_PLAN_PROMPT(muscleLevelsStr),
+        ...imageParts
+      ]);
+      const response = await result.response;
+      const text = response.text();
+
+      // Clean and parse
+      let cleanedResponse = text.trim();
+      if (cleanedResponse.startsWith('```json')) {
+        cleanedResponse = cleanedResponse.slice(7);
+      } else if (cleanedResponse.startsWith('```')) {
+        cleanedResponse = cleanedResponse.slice(3);
+      }
+      if (cleanedResponse.endsWith('```')) {
+        cleanedResponse = cleanedResponse.slice(0, -3);
+      }
+      cleanedResponse = cleanedResponse.trim();
+
+      const plan = JSON.parse(cleanedResponse);
+      return { success: true, data: plan };
+
+    } catch (error: any) {
+      console.error('Workout plan generation error:', error);
+      return { success: false, error: error.message || 'Failed to generate plan' };
     }
   }
 }

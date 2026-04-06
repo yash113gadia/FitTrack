@@ -4,7 +4,7 @@
 
 ## Introduction
 
-FitTrack ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application FitTrack (the "App").
+Whole Fit ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application Whole Fit (the "App").
 
 Please read this Privacy Policy carefully. By using the App, you agree to the collection and use of information in accordance with this policy.
 
@@ -12,7 +12,7 @@ Please read this Privacy Policy carefully. By using the App, you agree to the co
 
 ### Information You Provide
 
-When you use FitTrack, you may provide us with the following types of information:
+When you use Whole Fit, you may provide us with the following types of information:
 
 - **Profile Information**: Age, gender, height, weight, and activity level for calculating your nutritional goals
 - **Health & Fitness Data**: Food logs, nutritional intake, meal photos, and progress data
@@ -94,7 +94,7 @@ You have the right to:
 
 ## Children's Privacy
 
-FitTrack is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.
+Whole Fit is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.
 
 ## International Data Transfers
 
@@ -120,7 +120,7 @@ If you are a California resident, you have the right to:
 - Request deletion of your personal information
 - Not be discriminated against for exercising your rights
 
-**FitTrack does not sell your personal information.**
+**Whole Fit does not sell your personal information.**
 
 To exercise these rights, contact us at privacy@fittrack.app.
 

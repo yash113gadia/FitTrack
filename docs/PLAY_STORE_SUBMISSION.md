@@ -1,4 +1,4 @@
-# FitTrack - Google Play Store Submission Guide
+# Whole Fit - Google Play Store Submission Guide
 
 ## Play Console Information
 
@@ -6,7 +6,7 @@
 
 | Field | Value |
 |-------|-------|
-| **App Name** | FitTrack - Nutrition Tracker |
+| **App Name** | Whole Fit - Nutrition Tracker |
 | **Short Description** | Track macros, calories & reach your fitness goals with AI |
 | **Package Name** | com.yourcompany.fittrack |
 | **Category** | Health & Fitness |
@@ -26,9 +26,9 @@ Track macros, calories & reach your fitness goals with AI
 ## Full Description (4000 characters max)
 
 ```
-Take control of your nutrition with FitTrack, the smart macro tracking app designed to help you reach your fitness goals.
+Take control of your nutrition with Whole Fit, the smart macro tracking app designed to help you reach your fitness goals.
 
-Whether you're building muscle, losing weight, or simply eating healthier, FitTrack makes nutrition tracking effortless and effective.
+Whether you're building muscle, losing weight, or simply eating healthier, Whole Fit makes nutrition tracking effortless and effective.
 
 ★ KEY FEATURES ★
 
@@ -94,9 +94,9 @@ Whether you're building muscle, losing weight, or simply eating healthier, FitTr
 ✓ Gym-goers building muscle
 ✓ Those looking to lose weight sustainably
 
-FitTrack is designed to be simple enough for beginners yet powerful enough for experienced fitness enthusiasts.
+Whole Fit is designed to be simple enough for beginners yet powerful enough for experienced fitness enthusiasts.
 
-Download FitTrack and take the first step toward your health goals!
+Download Whole Fit and take the first step toward your health goals!
 
 Questions? Email support@fittrack.app
 ```
@@ -137,7 +137,7 @@ Same 6 screenshots optimized for larger tablet
 | **Content** | App branding, key features |
 
 ### Suggested Design:
-- FitTrack logo on left
+- Whole Fit logo on left
 - "Track Smarter. Eat Better." tagline
 - Icons representing key features
 - Brand colors (#007bff primary)
@@ -287,8 +287,8 @@ Google automatically tests your app for:
 ### Subscription Plans
 | Plan | Price | Features |
 |------|-------|----------|
-| FitTrack Pro Monthly | $4.99/mo | All features, no ads |
-| FitTrack Pro Yearly | $39.99/yr | All features, no ads, 33% savings |
+| Whole Fit Pro Monthly | $4.99/mo | All features, no ads |
+| Whole Fit Pro Yearly | $39.99/yr | All features, no ads, 33% savings |
 
 ---
 
@@ -347,7 +347,7 @@ Google automatically tests your app for:
 
 ### Version 1.0.0
 ```
-🎉 Welcome to FitTrack!
+🎉 Welcome to Whole Fit!
 
 We're excited to launch the smartest way to track your nutrition:
 

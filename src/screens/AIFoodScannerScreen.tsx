@@ -71,6 +71,7 @@ type RootStackParamList = {
   AIFoodScanner: {
     mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack';
     returnTo?: string;
+    initialImage?: string; // Pre-captured image from barcode scanner
   };
   LogFood: {
     foodItem?: Partial<FoodItem>;
@@ -184,6 +185,13 @@ export default function AIFoodScannerScreen() {
   // ============================================================================
   // ANIMATIONS
   // ============================================================================
+
+  // Show paywall immediately if user has exceeded free limit
+  useEffect(() => {
+    if (!isPremium && aiUsageCount >= FREE_AI_MESSAGES_LIMIT) {
+      setShowPremiumModal(true);
+    }
+  }, [isPremium, aiUsageCount]);
 
   useEffect(() => {
     if (screenState === 'analyzing') {
@@ -1431,6 +1439,9 @@ export default function AIFoodScannerScreen() {
   // MAIN RENDER
   // ============================================================================
 
+  // Check if user has exceeded limit and should be blocked
+  const isOverLimit = !isPremium && aiUsageCount >= FREE_AI_MESSAGES_LIMIT;
+
   return (
     <View className="flex-1 bg-neutral-900">
       {screenState === 'camera' && renderCameraView()}
@@ -1444,7 +1455,13 @@ export default function AIFoodScannerScreen() {
       {/* Premium Modal */}
       <PremiumModal
         visible={showPremiumModal}
-        onClose={() => setShowPremiumModal(false)}
+        onClose={() => {
+          setShowPremiumModal(false);
+          // If user is over limit and dismisses, go back
+          if (isOverLimit) {
+            navigation.goBack();
+          }
+        }}
         onSubscribe={() => {
           setShowPremiumModal(false);
           // In production, this would open the App Store subscription flow

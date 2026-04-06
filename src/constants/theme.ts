@@ -1,5 +1,5 @@
 /**
- * FitTrack Theme Configuration
+ * Whole Fit Theme Configuration
  * Comprehensive theming system for NativeWind (Tailwind CSS)
  */
 

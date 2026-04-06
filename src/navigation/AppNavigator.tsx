@@ -1,5 +1,5 @@
 /**
- * FitTrack Navigation System
+ * Whole Fit Navigation System
  * 
  * Comprehensive navigation with:
  * - Bottom tab navigation for main screens
@@ -22,13 +22,20 @@ import { useColorScheme } from 'nativewind';
 import DashboardScreen from '../screens/DashboardScreen';
 import LogFoodScreen from '../screens/LogFoodScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import CommunityScreen from '../screens/CommunityScreen';
 import ChatbotScreen from '../screens/ChatbotScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
 import BarcodeScannerScreen from '../screens/BarcodeScannerScreen';
 import AIFoodScannerScreen from '../screens/AIFoodScannerScreen';
 import AddEditReminderScreen from '../screens/AddEditReminderScreen';
 import ReminderListScreen from '../screens/ReminderListScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
+import PRTrackerScreen from '../screens/PRTrackerScreen';
+import AIBodyScanScreen from '../screens/AIBodyScanScreen';
+import MyPlanScreen from '../screens/MyPlanScreen';
 
 // Store and utilities
 import { useAppStore } from '../store/appStore';
@@ -57,6 +64,8 @@ const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [prefix, 'https://fittrack.app'],
   config: {
     screens: {
+      Login: 'login',
+      Signup: 'signup',
       Onboarding: 'onboarding',
       MainTabs: {
         screens: {
@@ -154,7 +163,7 @@ const SplashScreen: React.FC = () => (
   <View style={styles.splashContainer}>
     <View style={styles.splashContent}>
       <Ionicons name="fitness" size={80} color={colors.primary[500]} />
-      <Text style={styles.splashTitle}>FitTrack</Text>
+      <Text style={styles.splashTitle}>Whole Fit</Text>
       <Text style={styles.splashSubtitle}>Your Nutrition Companion</Text>
       <ActivityIndicator 
         size="large" 
@@ -214,6 +223,7 @@ const getTabBarIcon = ({ route, focused, color, size }: TabBarIconProps): React.
   const iconMap: Record<keyof MainTabParamList, { active: string; inactive: string }> = {
     Dashboard: { active: 'home', inactive: 'home-outline' },
     History: { active: 'time', inactive: 'time-outline' },
+    Community: { active: 'people', inactive: 'people-outline' },
     Chatbot: { active: 'chatbubbles', inactive: 'chatbubbles-outline' },
     Profile: { active: 'person', inactive: 'person-outline' },
   };
@@ -282,6 +292,14 @@ const MainTabs: React.FC = () => {
         }}
       />
       <Tab.Screen 
+        name="Community" 
+        component={CommunityScreen}
+        options={{ 
+          tabBarLabel: 'Community',
+          tabBarTestID: 'community-tab',
+        }}
+      />
+      <Tab.Screen 
         name="Chatbot" 
         component={ChatbotScreen}
         options={{ 
@@ -313,6 +331,7 @@ const MainTabs: React.FC = () => {
 const AppNavigator: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const user = useAppStore((state) => state.user);
+  const isAuthenticated = useAppStore((state) => state.isAuthenticated);
   const isOnboarded = !!user;
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -361,11 +380,27 @@ const AppNavigator: React.FC = () => {
           onStateChange={onStateChange}
       >
         <Stack.Navigator
-          initialRouteName={isOnboarded ? 'MainTabs' : 'Onboarding'}
+          initialRouteName={!isAuthenticated ? 'Login' : isOnboarded ? 'MainTabs' : 'Onboarding'}
           screenOptions={defaultStackScreenOptions}
         >
-          {/* Onboarding - only show if not onboarded */}
-          {!isOnboarded && (
+          {/* Login - only show if not authenticated */}
+          {!isAuthenticated && (
+            <>
+              <Stack.Screen 
+                name="Login" 
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="Signup" 
+                component={SignupScreen}
+                options={{ headerShown: false }}
+              />
+            </>
+          )}
+          
+          {/* Onboarding - only show if authenticated but not onboarded */}
+          {isAuthenticated && !isOnboarded && (
             <Stack.Screen 
               name="Onboarding" 
               component={OnboardingScreen}
@@ -373,84 +408,130 @@ const AppNavigator: React.FC = () => {
             />
           )}
           
-          {/* Main Tab Navigator */}
-          <Stack.Screen 
-            name="MainTabs" 
-            component={MainTabs}
-            options={{ headerShown: false }}
-          />
-          
-          {/* Log Food Screen - Modal */}
-          <Stack.Screen 
-            name="LogFood" 
-            component={LogFoodScreen}
-            options={{ 
-              headerShown: false,
-              presentation: 'modal',
-            }}
-          />
-          
-          {/* Barcode Scanner - Full Screen */}
-          <Stack.Screen 
-            name="BarcodeScanner" 
-            component={BarcodeScannerScreen}
-            options={{ 
-              title: 'Scan Barcode',
-              headerShown: false,
-              animation: 'fade',
-            }}
-          />
-          
-          {/* AI Food Scanner - Full Screen */}
-          <Stack.Screen 
-            name="AIScanner" 
-            component={AIFoodScannerScreen}
-            options={{ 
-              title: 'AI Food Scanner',
-              headerShown: false,
-              animation: 'fade',
-            }}
-          />
-          
-          {/* Food Details */}
-          <Stack.Screen 
-            name="FoodDetails" 
-            component={FoodDetailsScreen}
-            options={{ 
-              title: 'Food Details',
-              animation: 'slide_from_right',
-            }}
-          />
-          
-          {/* Edit Reminder - Modal */}
-          <Stack.Screen 
-            name="EditReminder" 
-            component={AddEditReminderScreen}
-            options={{ 
-              title: 'Edit Reminder',
-              ...modalScreenOptions,
-            }}
-          />
-          
-          {/* Settings */}
-          <Stack.Screen 
-            name="Settings" 
-            component={SettingsScreen}
-            options={{ 
-              title: 'Settings',
-              animation: 'slide_from_right',
-            }}
-          />
-          
-          {/* Reminder List */}
-          <Stack.Screen 
-            name="ReminderList" 
-            component={ReminderListScreen}
-            options={{ 
-              title: 'Reminders',
-              animation: 'slide_from_right',
-            }}
-          />
+          {/* Main Tab Navigator - only show if authenticated and onboarded */}
+          {isAuthenticated && (
+            <>
+              <Stack.Screen 
+                name="MainTabs" 
+                component={MainTabs}
+                options={{ headerShown: false }}
+              />
+              
+              {/* Log Food Screen - Modal */}
+              <Stack.Screen 
+                name="LogFood" 
+                component={LogFoodScreen}
+                options={{ 
+                  headerShown: false,
+                  presentation: 'modal',
+                }}
+              />
+              
+              {/* Barcode Scanner - Full Screen */}
+              <Stack.Screen 
+                name="BarcodeScanner" 
+                component={BarcodeScannerScreen}
+                options={{ 
+                  title: 'Scan Barcode',
+                  headerShown: false,
+                  animation: 'fade',
+                }}
+              />
+              
+              {/* AI Food Scanner - Full Screen */}
+              <Stack.Screen 
+                name="AIScanner" 
+                component={AIFoodScannerScreen}
+                options={{ 
+                  title: 'AI Food Scanner',
+                  headerShown: false,
+                  animation: 'fade',
+                }}
+              />
+              
+              {/* Food Details */}
+              <Stack.Screen 
+                name="FoodDetails" 
+                component={FoodDetailsScreen}
+                options={{ 
+                  title: 'Food Details',
+                  animation: 'slide_from_right',
+                }}
+              />
+              
+              {/* Edit Reminder - Modal */}
+              <Stack.Screen 
+                name="EditReminder" 
+                component={AddEditReminderScreen}
+                options={{ 
+                  title: 'Edit Reminder',
+                  ...modalScreenOptions,
+                }}
+              />
+              
+              {/* Settings */}
+              <Stack.Screen 
+                name="Settings" 
+                component={SettingsScreen}
+                options={{ 
+                  title: 'Settings',
+                  animation: 'slide_from_right',
+                }}
+              />
+              
+              {/* Reminder List */}
+              <Stack.Screen 
+                name="ReminderList" 
+                component={ReminderListScreen}
+                options={{ 
+                  title: 'Reminders',
+                  animation: 'slide_from_right',
+                }}
+              />
+
+              {/* PR Tracker */}
+              <Stack.Screen 
+                name="PRTracker" 
+                component={PRTrackerScreen}
+                options={{ 
+                  title: 'PR Tracker',
+                  animation: 'slide_from_right',
+                  headerShown: false,
+                }}
+              />
+
+              {/* AI Body Scan */}
+              <Stack.Screen 
+                name="AIBodyScan" 
+                component={AIBodyScanScreen}
+                options={{ 
+                  headerShown: false,
+                  presentation: 'modal',
+                  animation: 'slide_from_bottom',
+                }}
+              />
+
+              {/* My AI Plan */}
+              <Stack.Screen 
+                name="MyPlan" 
+                component={MyPlanScreen}
+                options={{ 
+                  title: 'My AI Plan',
+                  animation: 'slide_from_right',
+                }}
+              />
+
+              {/* User Profile */}
+              <Stack.Screen 
+                name="UserProfile" 
+                component={UserProfileScreen}
+                options={{ 
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                }}
+              />
+            </>
+          )}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

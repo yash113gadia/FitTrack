@@ -62,7 +62,7 @@ const CONSENT_OPTIONS: ConsentOption[] = [
     key: 'crashReportingEnabled',
     title: 'Crash Reporting',
     description:
-      'Automatically report app crashes to help us fix bugs quickly. This helps make FitTrack more stable.',
+      'Automatically report app crashes to help us fix bugs quickly. This helps make Whole Fit more stable.',
     icon: 'bug',
   },
 ];
@@ -141,7 +141,7 @@ const AnalyticsConsentScreen: React.FC<AnalyticsConsentScreenProps> = ({
             text: 'Email to Me',
             onPress: () => {
               Linking.openURL(
-                `mailto:?subject=My FitTrack Analytics Data&body=${encodeURIComponent(
+                `mailto:?subject=My Whole Fit Analytics Data&body=${encodeURIComponent(
                   JSON.stringify(data, null, 2)
                 )}`
               );
@@ -193,7 +193,7 @@ const AnalyticsConsentScreen: React.FC<AnalyticsConsentScreenProps> = ({
           <Text style={styles.heroTitle}>Your Privacy Matters</Text>
           <Text style={styles.heroDescription}>
             We believe in transparency. Choose what data you're comfortable sharing
-            to help improve FitTrack. You can change these settings anytime.
+            to help improve Whole Fit. You can change these settings anytime.
           </Text>
         </View>
 

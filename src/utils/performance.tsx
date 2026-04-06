@@ -1,8 +1,7 @@
 /**
- * Performance Optimization Utilities for FitTrack
+ * Performance Optimization Utilities for Whole Fit
  * 
- * Provides hooks, HOCs, and utilities for optimizing app performance
- * including memoization, lazy loading, image optimization, and profiling.
+ * Helper functions and hooks to measure and improve app performance.
  */
 
 import React, { 
@@ -123,13 +122,13 @@ export function useComputedValue<T>(
   deps: React.DependencyList,
   debugLabel?: string
 ): T {
-  const startTime = __DEV__ && debugLabel ? performance.now() : 0;
+  const startTime = __DEV__ && debugLabel && global.performance ? global.performance.now() : 0;
   
   const value = useMemo(() => {
     const result = compute();
     
-    if (__DEV__ && debugLabel) {
-      const duration = performance.now() - startTime;
+    if (__DEV__ && debugLabel && global.performance) {
+      const duration = global.performance.now() - startTime;
       if (duration > 16) { // Longer than a frame
         console.warn(`[Performance] ${debugLabel} took ${duration.toFixed(2)}ms`);
       }
@@ -304,7 +303,7 @@ export async function generateThumbnail(
 }
 
 // Image cache management
-const IMAGE_CACHE_DIR = `${FileSystem.cacheDirectory}images/`;
+const IMAGE_CACHE_DIR = `${(FileSystem as any).cacheDirectory}images/`;
 
 /**
  * Initialize image cache directory
@@ -490,12 +489,12 @@ class PerformanceProfiler {
   private activeMarks: Map<string, number> = new Map();
 
   mark(name: string): void {
-    if (!__DEV__) return;
-    this.activeMarks.set(name, performance.now());
+    if (!__DEV__ || !global.performance) return;
+    this.activeMarks.set(name, global.performance.now());
   }
 
   measure(name: string): number {
-    if (!__DEV__) return 0;
+    if (!__DEV__ || !global.performance) return 0;
     
     const startTime = this.activeMarks.get(name);
     if (startTime === undefined) {
@@ -503,7 +502,7 @@ class PerformanceProfiler {
       return 0;
     }
 
-    const duration = performance.now() - startTime;
+    const duration = global.performance.now() - startTime;
     this.activeMarks.delete(name);
 
     this.metrics.push({
@@ -629,7 +628,7 @@ export function useMemoryMonitor(componentName: string): void {
 // EXPORTS
 // ============================================
 
-export const performance = {
+export const performanceUtils = {
   // Deferred execution
   useDeferred,
   runAfterInteractions,
@@ -670,4 +669,4 @@ export const performance = {
   useMemoryMonitor,
 };
 
-export default performance;
+export default performanceUtils;

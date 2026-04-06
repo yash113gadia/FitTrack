@@ -1,30 +1,60 @@
 # Common Foods Database
 
 ## Overview
-This database contains nutritional information for 100 of the most commonly eaten foods. All values are standardized per 100g/100ml for easy calculation.
+This database contains nutritional information for 500+ of the most commonly eaten foods, plus **user-scanned items** that are automatically added when you scan barcodes. All values are standardized per 100g/100ml for easy calculation.
 
 ## Categories
-- **Protein** (27 items): Meat, poultry, seafood, eggs, plant-based proteins
+- **Protein** (40+ items): Meat, poultry, seafood, eggs, plant-based proteins
 - **Dairy** (6 items): Milk, cheese, yogurt
 - **Grains** (8 items): Rice, pasta, bread, oats, quinoa
-- **Vegetables** (10 items): Broccoli, spinach, carrots, tomatoes, etc.
-- **Fruits** (10 items): Apples, bananas, berries, citrus, etc.
+- **Vegetables** (20+ items): Broccoli, spinach, carrots, tomatoes, exotic vegetables
+- **Fruits** (20+ items): Apples, bananas, berries, citrus, exotic fruits
 - **Nuts & Seeds** (6 items): Almonds, cashews, walnuts, chia, pumpkin seeds
 - **Legumes** (3 items): Lentils, chickpeas, black beans
-- **Fast Food** (6 items): Pizza, burgers, fries, fried chicken
-- **Snacks & Sweets** (6 items): Chocolate, chips, popcorn, granola bars
-- **Beverages** (5 items): Juices, soda, coffee, tea
-- **Condiments & Oils** (7 items): Olive oil, butter, mayo, ketchup, honey
-- **Prepared Foods** (6 items): Salads, pasta dishes, soups
+- **Fast Food** (80+ items): Five Guys, In-N-Out, Popeyes, Chipotle, Panda Express, Sonic, Dairy Queen, etc.
+- **International Cuisine** (100+ items): Korean, Vietnamese, Greek, French, Spanish, German, Brazilian, Caribbean
+- **Snacks & Sweets** (40+ items): Candy bars, chips, cookies, popcorn, jerky
+- **Beverages** (30+ items): Alcohol, energy drinks, sodas, juices, smoothies
+- **Condiments & Oils** (20+ items): Sauces, dressings, spreads, oils
+- **Prepared Foods** (45+ items): Soups, stews, casseroles, salads
+- **Healthy & Superfoods** (15+ items): Kale chips, chia pudding, matcha, quinoa salad
+- **Supplements** (5 items): Protein powder, bars, creatine, vitamins
+- **Scanned Items** (Dynamic): Products you've scanned with barcode scanner
 
 ## Usage
 
-### Search for Foods
+### Search All Foods (Including Scanned Items)
+```typescript
+import { searchAllFoods } from '../data/commonFoods';
+
+const results = await searchAllFoods('chicken');
+// Returns array of matching foods from both built-in database and user-scanned items
+```
+
+### Search Built-in Foods Only
 ```typescript
 import { searchCommonFoods } from '../data/commonFoods';
 
 const results = searchCommonFoods('chicken');
-// Returns array of matching foods
+// Returns array of matching foods from built-in database only
+```
+
+### Add Scanned Item to Offline List
+```typescript
+import { addScannedFoodToOfflineList } from '../data/commonFoods';
+
+await addScannedFoodToOfflineList({
+  name: 'Product Name',
+  barcode: '1234567890',
+  calories: 250,
+  protein: 10,
+  carbs: 30,
+  fats: 8,
+  servingSize: 100,
+  servingUnit: 'g',
+  category: 'Scanned Items',
+});
+// Automatically adds to offline list for future searches
 ```
 
 ### Calculate Nutrition for Serving

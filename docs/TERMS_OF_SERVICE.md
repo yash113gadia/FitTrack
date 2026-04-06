@@ -4,13 +4,13 @@
 
 ## Agreement to Terms
 
-Welcome to FitTrack. These Terms of Service ("Terms") govern your use of the FitTrack mobile application (the "App") operated by FitTrack ("we," "us," or "our").
+Welcome to Whole Fit. These Terms of Service ("Terms") govern your use of the Whole Fit mobile application (the "App") operated by Whole Fit ("we," "us," or "our").
 
 By downloading, installing, or using the App, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the App.
 
 ## Description of Service
 
-FitTrack is a nutrition and macro tracking application that helps you:
+Whole Fit is a nutrition and macro tracking application that helps you:
 
 - Track daily food intake and macronutrients
 - Set and monitor fitness goals
@@ -32,7 +32,7 @@ By using the App, you represent and warrant that you:
 
 ### No Account Required
 
-FitTrack does not require you to create an account to use core features. All data is stored locally on your device.
+Whole Fit does not require you to create an account to use core features. All data is stored locally on your device.
 
 ### Data Responsibility
 
@@ -58,7 +58,7 @@ You agree NOT to:
 
 ### Not Medical Advice
 
-**THE APP IS NOT INTENDED TO PROVIDE MEDICAL ADVICE.** The information provided by FitTrack, including nutritional calculations, AI recommendations, and health guidance, is for informational purposes only.
+**THE APP IS NOT INTENDED TO PROVIDE MEDICAL ADVICE.** The information provided by Whole Fit, including nutritional calculations, AI recommendations, and health guidance, is for informational purposes only.
 
 ### Consult Healthcare Providers
 
@@ -90,7 +90,7 @@ You acknowledge and agree that:
 
 ### Our Property
 
-The App and its original content, features, and functionality are owned by FitTrack and are protected by international copyright, trademark, and other intellectual property laws.
+The App and its original content, features, and functionality are owned by Whole Fit and are protected by international copyright, trademark, and other intellectual property laws.
 
 ### Limited License
 
@@ -141,7 +141,7 @@ We do not warrant that:
 
 ## Limitation of Liability
 
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL FITTRACK BE LIABLE FOR:
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL WHOLE FIT BE LIABLE FOR:
 
 - Any indirect, incidental, special, consequential, or punitive damages
 - Any loss of profits, data, or goodwill
@@ -152,7 +152,7 @@ OUR TOTAL LIABILITY SHALL NOT EXCEED THE AMOUNT YOU PAID FOR THE APP (IF ANY).
 
 ## Indemnification
 
-You agree to indemnify and hold harmless FitTrack and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys' fees) arising from:
+You agree to indemnify and hold harmless Whole Fit and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys' fees) arising from:
 
 - Your use of the App
 - Your violation of these Terms
@@ -204,7 +204,7 @@ These Terms shall be governed by and construed in accordance with the laws of [Y
 
 ### Informal Resolution
 
-Before filing a claim, you agree to try to resolve the dispute informally by contacting us at legal@fittrack.app.
+Before filing a claim, you agree to try to resolve the dispute informally by contacting us at legal@wholefit.app.
 
 ### Arbitration
 
@@ -220,7 +220,7 @@ If any provision of these Terms is found to be unenforceable, the remaining prov
 
 ## Entire Agreement
 
-These Terms, together with our Privacy Policy, constitute the entire agreement between you and FitTrack regarding the App.
+These Terms, together with our Privacy Policy, constitute the entire agreement between you and Whole Fit regarding the App.
 
 ## Contact Us
 

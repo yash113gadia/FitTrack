@@ -119,7 +119,7 @@ export const config = {
   // Open Food Facts API
   openFoodFacts: {
     baseUrl: 'https://world.openfoodfacts.org/api/v2',
-    userAgent: process.env.EXPO_PUBLIC_OPENFOODFACTS_USER_AGENT || 'FitTrack/1.0',
+    userAgent: process.env.EXPO_PUBLIC_OPENFOODFACTS_USER_AGENT || 'Whole Fit/1.0',
   },
 
   // Backend API (for cloud sync, if applicable)
@@ -137,10 +137,9 @@ export const config = {
 
   // App Info
   app: {
-    name: 'FitTrack',
-    version: Constants.expoConfig?.version || '1.0.0',
-    buildNumber: Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode?.toString() || '1',
-    slug: Constants.expoConfig?.slug || 'fittrack',
+  name: 'Whole Fit',
+  version: Constants.expoConfig?.version || '1.0.0',
+  slug: Constants.expoConfig?.slug || 'whole-fit',
   },
 
   // Limits and Validation
@@ -195,7 +194,7 @@ export function validateConfig(): { valid: boolean; missing: string[] } {
 export function logConfigStatus(): void {
   if (!envConfig.enableDebug) return;
 
-  console.log('=== FitTrack Configuration ===');
+  console.log('=== Whole Fit Configuration ===');
   console.log(`Environment: ${envConfig.env}`);
   console.log(`Version: ${config.app.version}`);
   console.log(`API URL: ${envConfig.apiUrl}`);

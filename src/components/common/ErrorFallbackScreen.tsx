@@ -70,7 +70,7 @@ const ErrorFallbackScreen: React.FC<ErrorFallbackScreenProps> = ({
             text: 'Send Email',
             onPress: () =>
               Linking.openURL(
-                `mailto:support@fittrack.app?subject=FitTrack Error Report&body=${encodeURIComponent(
+                `mailto:support@fittrack.app?subject=Whole Fit Error Report&body=${encodeURIComponent(
                   errorSummary
                 )}`
               ),
@@ -162,7 +162,7 @@ const ErrorFallbackScreen: React.FC<ErrorFallbackScreenProps> = ({
 
         {/* App Version */}
         <Text style={styles.version}>
-          FitTrack v1.0.0 • {Platform.OS} {Platform.Version}
+          Whole Fit v1.0.0 • {Platform.OS} {Platform.Version}
         </Text>
       </View>
     </SafeAreaView>

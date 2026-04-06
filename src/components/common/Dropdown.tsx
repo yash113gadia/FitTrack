@@ -285,10 +285,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
               {/* Search (if enabled) */}
               {searchable && (
                 <View className="px-4 py-2 border-b border-gray-200">
-                  <View className="flex-row items-center bg-gray-100 rounded-lg px-3">
+                  <View 
+                    className="flex-row items-center bg-gray-100 rounded-lg px-3" 
+                    style={{ height: 48, justifyContent: 'center' }}
+                  >
                     <Ionicons name="search" size={20} color={colors.gray[400]} />
                     <TextInput
-                      className="flex-1 py-2 px-2 text-base"
+                      className="flex-1 px-2 text-base"
                       placeholder="Search..."
                       value={searchQuery}
                       onChangeText={setSearchQuery}

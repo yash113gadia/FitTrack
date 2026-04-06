@@ -1,7 +1,7 @@
 /**
- * Test Utilities and Helpers
+ * Test Utilities
  * 
- * Provides mock data factories and test helpers for FitTrack tests.
+ * Provides mock data factories and test helpers for Whole Fit tests.
  */
 
 import React from 'react';
@@ -36,8 +36,15 @@ export const createMockUser = (overrides?: Partial<UserProfile>): UserProfile =>
   goal: 'maintain',
   dailyCalorieGoal: 2200,
   dailyProteinGoal: 150,
-  dailyFatGoal: 73,
-  dailyCarbGoal: 220,
+  dailyFatGoal: 70,
+  dailyCarbGoal: 250,
+  muscleLevels: {
+    Chest: 'Beginner',
+    Back: 'Beginner',
+    Arms: 'Beginner',
+    Legs: 'Beginner',
+    Shoulders: 'Beginner',
+  },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   ...overrides,

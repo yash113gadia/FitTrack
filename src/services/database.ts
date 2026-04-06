@@ -9,6 +9,10 @@ import {
   StreakData,
   StreakEntry,
   Reminder,
+  PersonalRecord,
+  MuscleLevels,
+  FeedItem,
+  FeedInteraction,
 } from '../types';
 
 // Custom Error Classes
@@ -63,6 +67,8 @@ class DatabaseService {
           daily_protein_goal REAL NOT NULL,
           daily_fat_goal REAL,
           daily_carb_goal REAL,
+          last_scan_date TEXT,
+          muscle_levels TEXT NOT NULL, -- JSON string
           created_at TEXT DEFAULT CURRENT_TIMESTAMP,
           updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
@@ -136,12 +142,71 @@ class DatabaseService {
           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
 
+        -- Personal Records table
+        CREATE TABLE IF NOT EXISTS personal_records (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          exercise_name TEXT NOT NULL,
+          weight REAL NOT NULL,
+          reps INTEGER NOT NULL,
+          date TEXT NOT NULL,
+          video_uri TEXT,
+          status TEXT CHECK(status IN ('pending', 'verified', 'rejected')) DEFAULT 'pending',
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+        -- Workout Plans table
+        CREATE TABLE IF NOT EXISTS workout_plans (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          plan_data TEXT NOT NULL, -- JSON string
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+        -- Social: Follows
+        CREATE TABLE IF NOT EXISTS follows (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          follower_id INTEGER NOT NULL,
+          following_id INTEGER NOT NULL,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+          FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE,
+          UNIQUE(follower_id, following_id)
+        );
+
+        -- Social: Feed Items
+        CREATE TABLE IF NOT EXISTS feed_items (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          type TEXT CHECK(type IN ('rank_up', 'pr_verified', 'streak_milestone')),
+          content TEXT NOT NULL, -- JSON string
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+        -- Social: Interactions
+        CREATE TABLE IF NOT EXISTS feed_interactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          feed_item_id INTEGER NOT NULL,
+          user_id INTEGER NOT NULL,
+          type TEXT CHECK(type IN ('like', 'fist_bump')),
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (feed_item_id) REFERENCES feed_items(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          UNIQUE(feed_item_id, user_id)
+        );
+
         -- Indexes for performance
         CREATE INDEX IF NOT EXISTS idx_food_logs_date ON food_logs(logged_at);
         CREATE INDEX IF NOT EXISTS idx_food_logs_user ON food_logs(user_id);
         CREATE INDEX IF NOT EXISTS idx_food_items_barcode ON food_items(barcode);
         CREATE INDEX IF NOT EXISTS idx_streaks_user_date ON daily_streaks(user_id, date);
         CREATE INDEX IF NOT EXISTS idx_water_intake_user_date ON water_intake(user_id, date);
+        CREATE INDEX IF NOT EXISTS idx_pr_user_exercise ON personal_records(user_id, exercise_name);
+        CREATE INDEX IF NOT EXISTS idx_workout_plans_user ON workout_plans(user_id);
+        CREATE INDEX IF NOT EXISTS idx_follows_follower ON follows(follower_id);
+        CREATE INDEX IF NOT EXISTS idx_feed_user ON feed_items(user_id);
       `);
     } catch (error) {
       console.error('Database initialization failed:', error);
@@ -159,6 +224,11 @@ class DatabaseService {
         DROP TABLE IF EXISTS food_logs;
         DROP TABLE IF EXISTS food_items;
         DROP TABLE IF EXISTS users;
+        DROP TABLE IF EXISTS personal_records;
+        DROP TABLE IF EXISTS workout_plans;
+        DROP TABLE IF EXISTS follows;
+        DROP TABLE IF EXISTS feed_items;
+        DROP TABLE IF EXISTS feed_interactions;
       `);
       await this.initDatabase();
     } catch (error) {
@@ -178,11 +248,19 @@ class DatabaseService {
   async createUser(profile: Partial<UserProfile>): Promise<UserProfile> {
     const db = this.getDb();
     try {
+      const defaultMuscleLevels: MuscleLevels = {
+        Chest: 'Beginner',
+        Back: 'Beginner',
+        Arms: 'Beginner',
+        Legs: 'Beginner',
+        Shoulders: 'Beginner',
+      };
+
       const result = await db.runAsync(
         `INSERT INTO users (
           name, gender, age, weight, height, activity_level, goal, 
-          daily_calorie_goal, daily_protein_goal, daily_fat_goal, daily_carb_goal
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          daily_calorie_goal, daily_protein_goal, daily_fat_goal, daily_carb_goal, muscle_levels
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           profile.name || '',
           profile.gender || 'male', // Default to male if not provided
@@ -195,6 +273,7 @@ class DatabaseService {
           profile.dailyProteinGoal || 150,
           profile.dailyFatGoal || null,
           profile.dailyCarbGoal || null,
+          JSON.stringify(defaultMuscleLevels),
         ]
       );
       
@@ -229,6 +308,14 @@ class DatabaseService {
         dailyProteinGoal: result.daily_protein_goal,
         dailyFatGoal: result.daily_fat_goal,
         dailyCarbGoal: result.daily_carb_goal,
+        lastScanDate: result.last_scan_date,
+        muscleLevels: result.muscle_levels ? JSON.parse(result.muscle_levels) : {
+          Chest: 'Beginner',
+          Back: 'Beginner',
+          Arms: 'Beginner',
+          Legs: 'Beginner',
+          Shoulders: 'Beginner',
+        },
         createdAt: result.created_at,
         updatedAt: result.updated_at,
       };
@@ -255,6 +342,8 @@ class DatabaseService {
       if (updates.dailyProteinGoal !== undefined) { fields.push('daily_protein_goal = ?'); values.push(updates.dailyProteinGoal); }
       if (updates.dailyFatGoal !== undefined) { fields.push('daily_fat_goal = ?'); values.push(updates.dailyFatGoal); }
       if (updates.dailyCarbGoal !== undefined) { fields.push('daily_carb_goal = ?'); values.push(updates.dailyCarbGoal); }
+      if (updates.lastScanDate !== undefined) { fields.push('last_scan_date = ?'); values.push(updates.lastScanDate); }
+      if (updates.muscleLevels !== undefined) { fields.push('muscle_levels = ?'); values.push(JSON.stringify(updates.muscleLevels)); }
       
       fields.push('updated_at = CURRENT_TIMESTAMP');
 
@@ -993,6 +1082,263 @@ class DatabaseService {
       return newValue;
     } catch (error) {
       throw new DatabaseQueryError('Failed to decrement water intake', error);
+    }
+  }
+
+  // --- PERSONAL RECORDS OPERATIONS ---
+
+  async addPersonalRecord(record: Omit<PersonalRecord, 'id'>): Promise<PersonalRecord> {
+    const db = this.getDb();
+    try {
+      const result = await db.runAsync(
+        `INSERT INTO personal_records (user_id, exercise_name, weight, reps, date, video_uri, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          record.userId, 
+          record.exerciseName, 
+          record.weight, 
+          record.reps, 
+          record.date, 
+          record.videoUri || null, 
+          record.status || 'pending'
+        ]
+      );
+
+      return {
+        id: result.lastInsertRowId,
+        ...record,
+        status: record.status || 'pending',
+      };
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to add personal record', error);
+    }
+  }
+
+  async getPersonalRecords(userId: number, exerciseName: string): Promise<PersonalRecord[]> {
+    const db = this.getDb();
+    try {
+      const results = await db.getAllAsync<any>(
+        `SELECT * FROM personal_records 
+         WHERE user_id = ? AND exercise_name = ?
+         ORDER BY date DESC`,
+        [userId, exerciseName]
+      );
+
+      return results.map((row: any) => ({
+        id: row.id,
+        userId: row.user_id,
+        exerciseName: row.exercise_name,
+        weight: row.weight,
+        reps: row.reps,
+        date: row.date,
+        videoUri: row.video_uri,
+        status: row.status,
+      }));
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to get personal records', error);
+    }
+  }
+
+  async getBestPersonalRecord(userId: number, exerciseName: string): Promise<PersonalRecord | null> {
+    const db = this.getDb();
+    try {
+      // Assuming "best" means highest weight. 
+      // Could be refined to consider reps or 1RM calculation in the future.
+      const result = await db.getFirstAsync<any>(
+        `SELECT * FROM personal_records 
+         WHERE user_id = ? AND exercise_name = ?
+         ORDER BY weight DESC, date DESC
+         LIMIT 1`,
+        [userId, exerciseName]
+      );
+
+      if (!result) return null;
+
+      return {
+        id: result.id,
+        userId: result.user_id,
+        exerciseName: result.exercise_name,
+        weight: result.weight,
+        reps: result.reps,
+        date: result.date,
+        videoUri: result.video_uri,
+        status: result.status,
+      };
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to get best personal record', error);
+    }
+  }
+
+  async updatePersonalRecordStatus(id: number, status: 'pending' | 'verified' | 'rejected'): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        'UPDATE personal_records SET status = ? WHERE id = ?',
+        [status, id]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to update personal record status', error);
+    }
+  }
+
+  async getAllExerciseNames(userId: number): Promise<string[]> {
+    const db = this.getDb();
+    try {
+      const results = await db.getAllAsync<any>(
+        `SELECT DISTINCT exercise_name 
+         FROM personal_records 
+         WHERE user_id = ?
+         ORDER BY exercise_name ASC`,
+        [userId]
+      );
+
+      return results.map((row: any) => row.exercise_name);
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to get exercise names', error);
+    }
+  }
+
+  // --- WORKOUT PLAN OPERATIONS ---
+
+  async saveWorkoutPlan(userId: number, plan: any): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        `INSERT INTO workout_plans (user_id, plan_data) VALUES (?, ?)`,
+        [userId, JSON.stringify(plan)]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to save workout plan', error);
+    }
+  }
+
+  async getLatestWorkoutPlan(userId: number): Promise<any | null> {
+    const db = this.getDb();
+    try {
+      const result = await db.getFirstAsync<any>(
+        `SELECT plan_data FROM workout_plans 
+         WHERE user_id = ? 
+         ORDER BY created_at DESC 
+         LIMIT 1`,
+        [userId]
+      );
+      
+      if (!result) return null;
+      return JSON.parse(result.plan_data);
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to get workout plan', error);
+    }
+  }
+
+  // --- SOCIAL OPERATIONS ---
+
+  async followUser(followerId: number, followingId: number): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        'INSERT INTO follows (follower_id, following_id) VALUES (?, ?)',
+        [followerId, followingId]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to follow user', error);
+    }
+  }
+
+  async unfollowUser(followerId: number, followingId: number): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        'DELETE FROM follows WHERE follower_id = ? AND following_id = ?',
+        [followerId, followingId]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to unfollow user', error);
+    }
+  }
+
+  async isFollowing(followerId: number, followingId: number): Promise<boolean> {
+    const db = this.getDb();
+    try {
+      const result = await db.getFirstAsync<any>(
+        'SELECT id FROM follows WHERE follower_id = ? AND following_id = ?',
+        [followerId, followingId]
+      );
+      return !!result;
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to check following status', error);
+    }
+  }
+
+  async createFeedItem(userId: number, type: string, content: any): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        'INSERT INTO feed_items (user_id, type, content) VALUES (?, ?, ?)',
+        [userId, type, JSON.stringify(content)]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to create feed item', error);
+    }
+  }
+
+  async getFeed(userId: number, limit: number = 20, offset: number = 0): Promise<FeedItem[]> {
+    const db = this.getDb();
+    try {
+      // Get items from users I follow AND my own items
+      const results = await db.getAllAsync<any>(
+        `SELECT 
+           fi.id, fi.user_id, fi.type, fi.content, fi.created_at,
+           u.name as user_name,
+           (SELECT COUNT(*) FROM feed_interactions WHERE feed_item_id = fi.id AND type = 'like') as likes,
+           (SELECT COUNT(*) FROM feed_interactions WHERE feed_item_id = fi.id AND type = 'fist_bump') as fist_bumps,
+           (SELECT type FROM feed_interactions WHERE feed_item_id = fi.id AND user_id = ?) as user_interaction
+         FROM feed_items fi
+         JOIN users u ON fi.user_id = u.id
+         WHERE fi.user_id = ? OR fi.user_id IN (SELECT following_id FROM follows WHERE follower_id = ?)
+         ORDER BY fi.created_at DESC
+         LIMIT ? OFFSET ?`,
+        [userId, userId, userId, limit, offset]
+      );
+
+      return results.map((row: any) => ({
+        id: row.id,
+        userId: row.user_id,
+        userName: row.user_name,
+        type: row.type,
+        content: JSON.parse(row.content),
+        likes: row.likes,
+        fistBumps: row.fist_bumps,
+        createdAt: row.created_at,
+        userInteraction: row.user_interaction,
+      }));
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to get feed', error);
+    }
+  }
+
+  async addInteraction(feedItemId: number, userId: number, type: 'like' | 'fist_bump'): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        `INSERT INTO feed_interactions (feed_item_id, user_id, type) 
+         VALUES (?, ?, ?)
+         ON CONFLICT(feed_item_id, user_id) DO UPDATE SET type = excluded.type`,
+        [feedItemId, userId, type]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to add interaction', error);
+    }
+  }
+
+  async removeInteraction(feedItemId: number, userId: number): Promise<void> {
+    const db = this.getDb();
+    try {
+      await db.runAsync(
+        'DELETE FROM feed_interactions WHERE feed_item_id = ? AND user_id = ?',
+        [feedItemId, userId]
+      );
+    } catch (error) {
+      throw new DatabaseQueryError('Failed to remove interaction', error);
     }
   }
 

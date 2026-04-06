@@ -147,7 +147,7 @@ const ProfileScreen = () => {
       );
 
       // Format data as text
-      let exportText = '📊 FitTrack Data Export\n';
+      let exportText = '📊 Whole Fit Data Export\n';
       exportText += `Generated: ${new Date().toLocaleString()}\n\n`;
       
       exportText += '👤 PROFILE\n';
@@ -179,7 +179,7 @@ const ProfileScreen = () => {
       // Share the data
       await Share.share({
         message: exportText,
-        title: 'FitTrack Data Export'
+        title: 'Whole Fit Data Export'
       });
 
     } catch (error) {

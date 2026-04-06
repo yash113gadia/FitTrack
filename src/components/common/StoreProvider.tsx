@@ -47,7 +47,7 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color={colors.primary[500]} />
-        <Text className="text-gray-500 mt-4">Loading FitTrack...</Text>
+        <Text className="text-gray-500 mt-4">Loading Whole Fit...</Text>
       </View>
     );
   }

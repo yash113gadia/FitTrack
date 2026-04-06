@@ -1,20 +1,8 @@
 /**
- * Common UI Components
- *
- * A comprehensive library of reusable UI components for FitTrack.
- * All components support NativeWind styling, accessibility, and animations.
- *
- * @example
- * import {
- *   Button,
- *   Card,
- *   CircularProgress,
- *   TextInput,
- *   Modal,
- *   Toast,
- *   useToast,
- *   StoreProvider,
- * } from '@/components/common';
+ * Common Components
+ * 
+ * A comprehensive library of reusable UI components for Whole Fit.
+ * These components follow the design system and are used throughout the app.
  */
 
 // ============================================================================
@@ -101,6 +89,13 @@ export type { WeekdayPickerProps } from './WeekdayPicker';
 
 export { TimePicker } from './TimePicker';
 export type { TimePickerProps } from './TimePicker';
+
+// ============================================================================
+// OTHER COMPONENTS
+// ============================================================================
+export { PremiumModal, PremiumBanner } from './PremiumModal';
+export { default as MuscleBadge } from './MuscleBadge';
+export { default as ScrollWheelPicker } from './ScrollWheelPicker';
 
 // ============================================================================
 // ERROR HANDLING COMPONENTS

@@ -1,8 +1,7 @@
 /**
- * Security Utilities for FitTrack
+ * Security Utilities for Whole Fit
  * 
- * Provides encryption, secure storage, input validation,
- * and other security best practices.
+ * Helper functions for secure storage and encryption.
  */
 
 import * as SecureStore from 'expo-secure-store';

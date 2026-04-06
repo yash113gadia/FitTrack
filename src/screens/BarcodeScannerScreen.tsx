@@ -48,6 +48,7 @@ import { colors } from '../constants/theme';
 import { FoodItem } from '../types';
 import { databaseService } from '../services/database';
 import { openFoodFactsService, OpenFoodFactsResult, ServingSizeOption } from '../services/openFoodFacts';
+import { addScannedFoodToOfflineList } from '../data/commonFoods';
 import { useAppStore } from '../store/appStore';
 
 // ============================================================================
@@ -72,6 +73,18 @@ const SCAN_AREA_SIZE = SCREEN_WIDTH * 0.7;
 const CORNER_SIZE = 30;
 const CORNER_WIDTH = 4;
 const SCAN_DEBOUNCE_MS = 1500;
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+const getMealTypeFromTime = (): 'breakfast' | 'lunch' | 'dinner' | 'snack' => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 11) return 'breakfast';
+  if (hour >= 11 && hour < 15) return 'lunch';
+  if (hour >= 17 && hour < 21) return 'dinner';
+  return 'snack';
+};
 
 // ============================================================================
 // SCANNING OVERLAY COMPONENT
@@ -444,20 +457,23 @@ const ManualEntryModal: React.FC<ManualEntryModalProps> = ({
           Type or paste the barcode number below
         </Text>
 
-        <TextInput
-          value={barcode}
-          onChangeText={(text) => {
-            setBarcode(text.replace(/\D/g, ''));
-            setError('');
-          }}
-          placeholder="e.g., 3017620422003"
-          keyboardType="number-pad"
-          maxLength={14}
-          className={`bg-gray-100 rounded-xl px-4 py-3 text-lg font-mono text-center ${
-            error ? 'border-2 border-error-500' : ''
-          }`}
-          accessibilityLabel="Barcode number input"
-        />
+        <View 
+          className={`bg-gray-100 rounded-xl px-4 ${error ? 'border-2 border-error-500' : ''}`}
+          style={{ height: 52, justifyContent: 'center' }}
+        >
+          <TextInput
+            value={barcode}
+            onChangeText={(text) => {
+              setBarcode(text.replace(/\D/g, ''));
+              setError('');
+            }}
+            placeholder="e.g., 3017620422003"
+            keyboardType="number-pad"
+            maxLength={14}
+            className="text-lg font-mono text-center"
+            accessibilityLabel="Barcode number input"
+          />
+        </View>
 
         {error && (
           <Text className="text-error-500 text-sm mt-2 text-center">{error}</Text>
@@ -485,6 +501,8 @@ const ManualEntryModal: React.FC<ManualEntryModalProps> = ({
 // MAIN COMPONENT
 // ============================================================================
 
+const NO_BARCODE_TIMEOUT = 5000; // Show AI suggestion after 5 seconds
+
 const BarcodeScannerScreen: React.FC = () => {
   // Navigation
   const navigation = useNavigation();
@@ -498,6 +516,7 @@ const BarcodeScannerScreen: React.FC = () => {
   const [scannedBarcode, setScannedBarcode] = useState<string>('');
   const [scannedProduct, setScannedProduct] = useState<ScannedProduct | null>(null);
   const [errorInfo, setErrorInfo] = useState<{ message: string; code?: string }>({ message: '' });
+  const [showAISuggestion, setShowAISuggestion] = useState(false);
 
   // Modals
   const [showResultModal, setShowResultModal] = useState(false);
@@ -508,10 +527,59 @@ const BarcodeScannerScreen: React.FC = () => {
   // Refs
   const lastScanTime = useRef<number>(0);
   const isProcessing = useRef<boolean>(false);
+  const noBarcodeTimer = useRef<NodeJS.Timeout | null>(null);
+  const cameraRef = useRef<CameraView>(null);
 
   // Store & Toast
   const user = useAppStore((state) => state.user);
   const toast = useToast();
+
+  // ============================================================================
+  // SMART DETECTION - Show AI suggestion if no barcode detected
+  // ============================================================================
+
+  useEffect(() => {
+    if (scanState === 'scanning') {
+      // Start timer when scanning begins
+      noBarcodeTimer.current = setTimeout(() => {
+        setShowAISuggestion(true);
+      }, NO_BARCODE_TIMEOUT);
+    } else {
+      // Clear timer if state changes
+      if (noBarcodeTimer.current) {
+        clearTimeout(noBarcodeTimer.current);
+        noBarcodeTimer.current = null;
+      }
+      setShowAISuggestion(false);
+    }
+
+    return () => {
+      if (noBarcodeTimer.current) {
+        clearTimeout(noBarcodeTimer.current);
+      }
+    };
+  }, [scanState]);
+
+  // Reset AI suggestion timer when user interacts
+  const resetAISuggestionTimer = useCallback(() => {
+    setShowAISuggestion(false);
+    if (noBarcodeTimer.current) {
+      clearTimeout(noBarcodeTimer.current);
+    }
+    noBarcodeTimer.current = setTimeout(() => {
+      if (scanState === 'scanning') {
+        setShowAISuggestion(true);
+      }
+    }, NO_BARCODE_TIMEOUT);
+  }, [scanState]);
+
+  // Navigate to AI Scanner
+  const handleSwitchToAI = useCallback(async () => {
+    // Just navigate to AI scanner - don't try to capture image
+    // (Simulator cameras don't work well, and it's better UX to let user take fresh photo)
+    // @ts-ignore
+    navigation.replace('AIScanner', { mealType: getMealTypeFromTime() });
+  }, [navigation]);
 
   // ============================================================================
   // BARCODE PROCESSING
@@ -641,6 +709,25 @@ const BarcodeScannerScreen: React.FC = () => {
         if (!scannedProduct?.fromCache) {
           // Save to database for future lookups
           dbFoodItem = await databaseService.createFoodItem(foodItem);
+          
+          // Also add to offline common foods list for quick access
+          try {
+            await addScannedFoodToOfflineList({
+              name: foodItem.name,
+              barcode: foodItem.barcode,
+              calories: foodItem.calories,
+              protein: foodItem.protein,
+              carbs: foodItem.carbs,
+              fats: foodItem.fats,
+              servingSize: foodItem.servingSize,
+              servingUnit: foodItem.servingUnit,
+              category: 'Scanned Items',
+            });
+            console.log('Added scanned product to offline list:', foodItem.name);
+          } catch (offlineError) {
+            console.warn('Failed to add to offline list:', offlineError);
+            // Continue even if offline save fails
+          }
         } else {
           // Already in database
           const existing = await databaseService.getFoodItemByBarcode(foodItem.barcode || '');
@@ -672,16 +759,8 @@ const BarcodeScannerScreen: React.FC = () => {
   );
 
   // ============================================================================
-  // HELPER FUNCTIONS
+  // SCANNER HELPERS
   // ============================================================================
-
-  const getMealTypeFromTime = (): 'breakfast' | 'lunch' | 'dinner' | 'snack' => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 11) return 'breakfast';
-    if (hour >= 11 && hour < 15) return 'lunch';
-    if (hour >= 17 && hour < 21) return 'dinner';
-    return 'snack';
-  };
 
   const resetScanner = useCallback(() => {
     setScanState('scanning');
@@ -779,6 +858,7 @@ const BarcodeScannerScreen: React.FC = () => {
     <View className="flex-1 bg-black">
       {/* Camera View */}
       <CameraView
+        ref={cameraRef}
         style={StyleSheet.absoluteFill}
         facing="back"
         enableTorch={flashEnabled}
@@ -840,8 +920,37 @@ const BarcodeScannerScreen: React.FC = () => {
             </Animated.View>
           )}
 
+          {/* AI Suggestion Banner - shows after 5 seconds of no barcode detected */}
+          {showAISuggestion && scanState === 'scanning' && (
+            <Animated.View entering={FadeIn} exiting={FadeOut} className="w-full mb-4">
+              <Pressable
+                onPress={handleSwitchToAI}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-4 mx-2"
+                style={{
+                  backgroundColor: '#7C3AED',
+                  shadowColor: '#7C3AED',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+              >
+                <View className="flex-row items-center">
+                  <View className="w-12 h-12 rounded-full bg-white/20 items-center justify-center mr-3">
+                    <Ionicons name="sparkles" size={24} color="white" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white font-bold text-base">No barcode? Use AI instead</Text>
+                    <Text className="text-white/80 text-sm">Tap to analyze food with AI vision</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={24} color="white" />
+                </View>
+              </Pressable>
+            </Animated.View>
+          )}
+
           {/* Instructions */}
-          {scanState === 'scanning' && (
+          {scanState === 'scanning' && !showAISuggestion && (
             <Animated.View entering={FadeIn} className="items-center">
               <View className="bg-black/70 rounded-xl px-6 py-4 mb-4">
                 <Text className="text-white text-center font-medium mb-1">
@@ -854,15 +963,30 @@ const BarcodeScannerScreen: React.FC = () => {
             </Animated.View>
           )}
 
-          {/* Manual Entry Button */}
-          <Pressable
-            onPress={() => setShowManualEntryModal(true)}
-            className="bg-white/20 rounded-full px-6 py-3"
-            accessibilityRole="button"
-            accessibilityLabel="Enter barcode manually"
-          >
-            <Text className="text-white font-medium">Enter barcode manually</Text>
-          </Pressable>
+          {/* Action Buttons */}
+          <View className="flex-row items-center gap-3">
+            {/* Manual Entry Button */}
+            <Pressable
+              onPress={() => setShowManualEntryModal(true)}
+              className="bg-white/20 rounded-full px-5 py-3 flex-row items-center"
+              accessibilityRole="button"
+              accessibilityLabel="Enter barcode manually"
+            >
+              <Ionicons name="keypad-outline" size={18} color="white" />
+              <Text className="text-white font-medium ml-2">Manual</Text>
+            </Pressable>
+
+            {/* AI Scan Button */}
+            <Pressable
+              onPress={handleSwitchToAI}
+              className="bg-primary-500 rounded-full px-5 py-3 flex-row items-center"
+              accessibilityRole="button"
+              accessibilityLabel="Use AI to scan food"
+            >
+              <Ionicons name="sparkles" size={18} color="white" />
+              <Text className="text-white font-medium ml-2">AI Scan</Text>
+            </Pressable>
+          </View>
         </View>
       </SafeAreaView>
 

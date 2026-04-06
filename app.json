@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FitTrack",
-    "slug": "fittrack",
+    "name": "Whole Fit",
+    "slug": "whole-fit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,9 +22,9 @@
       "bundleIdentifier": "com.yourcompany.fittrack",
       "buildNumber": "1",
       "infoPlist": {
-        "NSCameraUsageDescription": "FitTrack needs camera access to scan barcodes and recognize food.",
-        "NSPhotoLibraryUsageDescription": "FitTrack needs photo library access to let you choose food images.",
-        "NSUserTrackingUsageDescription": "FitTrack uses tracking to provide personalized nutrition insights."
+        "NSCameraUsageDescription": "Whole Fit needs camera access to scan barcodes and recognize food.",
+        "NSPhotoLibraryUsageDescription": "Whole Fit needs photo library access to let you choose food images.",
+        "NSUserTrackingUsageDescription": "Whole Fit uses tracking to provide personalized nutrition insights."
       }
     },
     "android": {
@@ -51,13 +51,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow FitTrack to access your camera for scanning food."
+          "cameraPermission": "Allow Whole Fit to access your camera for scanning food."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow FitTrack to access your photos for food logging."
+          "photosPermission": "Allow Whole Fit to access your photos for food logging."
         }
       ]
     ],

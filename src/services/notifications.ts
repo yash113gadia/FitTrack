@@ -1,7 +1,7 @@
 /**
  * Notification Service
  *
- * Comprehensive notification system for FitTrack app.
+ * Comprehensive notification system for Whole Fit app.
  * Handles permission management, scheduling, rich notifications,
  * deep linking, and analytics tracking.
  *

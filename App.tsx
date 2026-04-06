@@ -3,15 +3,27 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useColorScheme } from 'nativewind';
+import { cssInterop } from 'react-native-css-interop';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppNavigator from './src/navigation/AppNavigator';
 import { databaseService } from './src/services/database';
 import { ErrorLogger } from './src/services/errorLogging';
 import { setupGlobalErrorHandler } from './src/services/globalErrorHandler';
 import { initNetworkErrorHandling } from './src/services/networkErrorHandling';
+import { notificationService } from './src/services/notifications';
 import ErrorBoundary from './src/components/common/ErrorBoundary';
 import ErrorFallbackScreen from './src/components/common/ErrorFallbackScreen';
 import { ToastProvider } from './src/components/common/Toast';
 import { colors } from './src/constants/theme';
+
+// Storage key for dark mode preference
+const DARK_MODE_KEY = '@fittrack_dark_mode';
+
+// Disable react-native-css-interop upgrade warnings that cause navigation context errors
+if (__DEV__) {
+  // @ts-ignore - Suppress the upgrade warnings that cause serialization issues with navigation
+  cssInterop.warnOnce = () => {};
+}
 
 // Set up global error handler as early as possible
 setupGlobalErrorHandler({
@@ -26,12 +38,22 @@ setupGlobalErrorHandler({
 export default function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [initError, setInitError] = useState<Error | null>(null);
+  const [savedColorScheme, setSavedColorScheme] = useState<'light' | 'dark' | null>(null);
 
   console.log('[App] Rendering App component. isInitialized:', isInitialized, 'initError:', initError);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        // Load saved dark mode preference FIRST (before other init)
+        const savedMode = await AsyncStorage.getItem(DARK_MODE_KEY);
+        if (savedMode === 'dark' || savedMode === 'light') {
+          setSavedColorScheme(savedMode);
+          console.log('[App] Loaded saved color scheme:', savedMode);
+        } else {
+          setSavedColorScheme('light'); // Default to light
+        }
+
         // Initialize error logging first
         await ErrorLogger.init({
           enableConsoleLogging: __DEV__,
@@ -48,6 +70,10 @@ export default function App() {
         // Initialize database
         await databaseService.initDatabase();
         ErrorLogger.logInfo('Database initialized');
+
+        // Initialize notifications
+        await notificationService.initialize();
+        ErrorLogger.logInfo('Notifications initialized');
 
         setIsInitialized(true);
         ErrorLogger.logInfo('App initialization complete');
@@ -66,7 +92,7 @@ export default function App() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary[500]} />
-        <Text style={styles.loadingText}>Loading FitTrack...</Text>
+        <Text style={styles.loadingText}>Loading Whole Fit...</Text>
       </View>
     );
   }
@@ -91,15 +117,23 @@ export default function App() {
       fallback={<ErrorFallbackScreen error={null} isFatal />}
     >
       <ToastProvider>
-        <AppContent />
+        <AppContent initialColorScheme={savedColorScheme} />
       </ToastProvider>
     </ErrorBoundary>
   );
 }
 
 // Separate component to use hooks inside ToastProvider
-function AppContent() {
-  const { colorScheme } = useColorScheme();
+function AppContent({ initialColorScheme }: { initialColorScheme: 'light' | 'dark' | null }) {
+  const { colorScheme, setColorScheme } = useColorScheme();
+  
+  // Apply saved color scheme on mount
+  useEffect(() => {
+    if (initialColorScheme && initialColorScheme !== colorScheme) {
+      console.log('[AppContent] Applying saved color scheme:', initialColorScheme);
+      setColorScheme(initialColorScheme);
+    }
+  }, [initialColorScheme]);
   
   return (
     <>

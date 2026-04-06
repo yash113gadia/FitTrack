@@ -1,4 +1,4 @@
-# FitTrack - App Store Submission Guide
+# Whole Fit - App Store Submission Guide
 
 ## App Store Connect Information
 
@@ -6,7 +6,7 @@
 
 | Field | Value |
 |-------|-------|
-| **App Name** | FitTrack - Nutrition Tracker |
+| **App Name** | Whole Fit - Nutrition Tracker |
 | **Subtitle** | Track Macros & Reach Goals |
 | **Bundle ID** | com.yourcompany.fittrack |
 | **SKU** | FITTRACK001 |
@@ -27,9 +27,9 @@ nutrition,fitness,macro,diet,health,calories,protein,tracker,food,weight,gym,mea
 ## App Description (4000 characters max)
 
 ```
-Take control of your nutrition with FitTrack, the smart macro tracking app designed to help you reach your fitness goals.
+Take control of your nutrition with Whole Fit, the smart macro tracking app designed to help you reach your fitness goals.
 
-Whether you're building muscle, losing weight, or simply eating healthier, FitTrack makes nutrition tracking effortless and effective.
+Whether you're building muscle, losing weight, or simply eating healthier, Whole Fit makes nutrition tracking effortless and effective.
 
 KEY FEATURES:
 
@@ -95,9 +95,9 @@ PERFECT FOR:
 • Gym-goers building muscle
 • Those looking to lose weight sustainably
 
-FitTrack is designed to be simple enough for beginners yet powerful enough for experienced fitness enthusiasts. Our clean, intuitive interface makes logging food a breeze, while our advanced analytics help you understand your nutrition like never before.
+Whole Fit is designed to be simple enough for beginners yet powerful enough for experienced fitness enthusiasts. Our clean, intuitive interface makes logging food a breeze, while our advanced analytics help you understand your nutrition like never before.
 
-Start your journey to better nutrition today. Download FitTrack and take the first step toward your health goals!
+Start your nutrition journey today. Download Whole Fit and take the first step toward your health goals!
 
 ---
 Questions or feedback? We'd love to hear from you!
@@ -119,7 +119,7 @@ Website: https://fittrack.app
 
 ### Version 1.0.0
 ```
-🚀 Welcome to FitTrack!
+🚀 Welcome to Whole Fit!
 
 We're excited to launch the smartest way to track your nutrition:
 
@@ -228,7 +228,7 @@ Email: support@fittrack.app
 
 ### Notes for Reviewer
 ```
-FitTrack is a nutrition tracking app that works entirely offline. 
+Whole Fit is a nutrition tracking app that works entirely offline. 
 No account is required to use the app.
 
 Key features to test:

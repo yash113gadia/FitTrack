@@ -13,6 +13,8 @@
  * Root stack navigator param list
  */
 export type RootStackParamList = {
+  Login: undefined;
+  Signup: undefined;
   Onboarding: undefined;
   MainTabs: undefined;
   LogFood: { 
@@ -34,6 +36,10 @@ export type RootStackParamList = {
   EditReminder: { reminderId?: number };
   Settings: undefined;
   ReminderList: undefined;
+  PRTracker: undefined;
+  AIBodyScan: undefined;
+  MyPlan: undefined;
+  UserProfile: { userId: number };
 };
 
 /**
@@ -42,6 +48,7 @@ export type RootStackParamList = {
 export type MainTabParamList = {
   Dashboard: undefined;
   History: undefined;
+  Community: undefined;
   Chatbot: undefined;
   Profile: undefined;
 };

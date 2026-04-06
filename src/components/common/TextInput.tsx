@@ -156,9 +156,9 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(({
 
       {/* Input Container */}
       <Animated.View
-        style={animatedContainerStyle}
+        style={[animatedContainerStyle, { justifyContent: 'center' }]}
         className={`
-          flex-row items-center rounded-lg px-3 min-h-[48px]
+          flex-row items-center rounded-lg px-3
           ${variantStyles[variant]}
           ${disabled ? 'opacity-60' : ''}
           ${error ? 'border-error-500' : ''}
@@ -174,8 +174,8 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(({
         {/* Text Input */}
         <RNTextInput
           ref={ref}
-          className="flex-1 text-base py-3"
-          style={{ color: textColor }}
+          className="flex-1 text-base"
+          style={{ color: textColor, height: 48 }}
           placeholderTextColor={placeholderColor}
           editable={!disabled}
           onFocus={handleFocus}

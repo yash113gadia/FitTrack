@@ -9,6 +9,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { databaseService } from '../services/database';
+import { MuscleLevels, LeagueRank } from '../types';
 
 const { width } = Dimensions.get('window');
 
@@ -276,6 +277,41 @@ const DashboardScreen = () => {
     }
   };
 
+  // Weak Point Logic
+  const getWeakPoint = () => {
+    if (!user?.muscleLevels) return null;
+
+    const rankValue = (rank: LeagueRank): number => {
+      switch (rank) {
+        case 'Beginner': return 1;
+        case 'Intermediate': return 2;
+        case 'Elite': return 3;
+        case 'Legendary': return 4;
+        default: return 1;
+      }
+    };
+
+    const levels = user.muscleLevels;
+    const scores = Object.entries(levels).map(([group, rank]) => ({
+      group,
+      score: rankValue(rank as LeagueRank)
+    }));
+
+    const maxScore = Math.max(...scores.map(s => s.score));
+    // Find a muscle group that is at least 2 levels below the max (e.g. Beginner vs Elite)
+    const weakPoint = scores.find(s => s.score <= maxScore - 2);
+
+    if (weakPoint) {
+      return {
+        group: weakPoint.group,
+        suggestion: `Try adding more volume for ${weakPoint.group}!`
+      };
+    }
+    return null;
+  };
+
+  const weakPoint = getWeakPoint();
+
   const caloriesPercentage = (todayData.calories.current / todayData.calories.goal) * 100;
 
   if (loading) {
@@ -300,6 +336,21 @@ const DashboardScreen = () => {
           <Text className="text-3xl font-bold text-gray-900 dark:text-white">Today's Progress</Text>
           <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">Keep up the great work! 🔥</Text>
         </View>
+
+        {/* Weak Point Alert */}
+        {weakPoint && (
+          <View className="mx-4 mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-2xl flex-row items-center">
+            <View className="bg-red-100 dark:bg-red-800 p-2 rounded-full mr-3">
+              <Ionicons name="warning" size={24} color={colors.error[500]} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-red-700 dark:text-red-400">Weak Point Alert: {weakPoint.group}</Text>
+              <Text className="text-sm text-red-600 dark:text-red-300 mt-1">
+                {weakPoint.suggestion}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Main Calorie Ring */}
         <View className="items-center py-6 bg-white dark:bg-gray-800 mx-4 rounded-[28px] shadow-sm mb-4 mt-4">
@@ -373,9 +424,9 @@ const DashboardScreen = () => {
         {/* Quick Actions */}
         <View className="px-4 mb-8">
           <Text className="text-lg font-bold text-gray-900 dark:text-white mb-3">Quick Actions</Text>
-          <View className="flex-row justify-between">
+          <View className="flex-row justify-between mb-3">
             <TouchableOpacity 
-              className="bg-primary rounded-[20px] p-4 flex-1 mr-2 items-center"
+              className="bg-primary-500 rounded-[20px] p-4 flex-1 mr-2 items-center"
               onPress={() => navigation.navigate('LogFood', {})}
             >
               <Ionicons name="add-circle" size={32} color="white" />
@@ -387,6 +438,24 @@ const DashboardScreen = () => {
             >
               <Ionicons name="barcode" size={32} color="white" />
               <Text className="text-white font-semibold mt-2">Scan Food</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-row justify-between gap-3 mt-3">
+            <TouchableOpacity 
+              className="bg-orange-500 rounded-[20px] p-4 flex-1 items-center shadow-sm shadow-orange-500/20"
+              onPress={() => navigation.navigate('PRTracker')}
+            >
+              <Ionicons name="trophy" size={32} color="white" />
+              <Text className="text-white font-semibold mt-2">PR Tracker</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              className="bg-purple-600 rounded-[20px] p-4 flex-1 items-center shadow-sm shadow-purple-500/20"
+              onPress={() => navigation.navigate('AIBodyScan')}
+            >
+              <Ionicons name="body" size={32} color="white" />
+              <Text className="text-white font-semibold mt-2">AI Body Scan</Text>
             </TouchableOpacity>
           </View>
         </View>

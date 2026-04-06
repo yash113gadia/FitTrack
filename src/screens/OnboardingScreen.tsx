@@ -21,6 +21,7 @@ import * as Haptics from 'expo-haptics';
 import { Camera } from 'expo-camera';
 import * as Notifications from 'expo-notifications';
 import { databaseService } from '../services/database';
+import { ScrollWheelPicker } from '../components/common';
 
 const { width } = Dimensions.get('window');
 
@@ -264,7 +265,7 @@ const OnboardingScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View style={styles.logoCircle}>
           <Ionicons name="fitness" size={60} color="#fff" />
         </View>
-        <Text style={styles.appName}>FitTrack</Text>
+        <Text style={styles.appName}>Whole Fit</Text>
         <Text style={styles.tagline}>Track Your Nutrition, Reach Your Goals</Text>
       </View>
 
@@ -353,13 +354,11 @@ const OnboardingScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>How old are you?</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Age"
-          value={data.age}
-          onChangeText={(text) => updateData('age', text.replace(/[^0-9]/g, ''))}
-          keyboardType="number-pad"
-          maxLength={3}
+        <ScrollWheelPicker
+          items={Array.from({ length: 91 }, (_, i) => (i + 10).toString())}
+          initialValue={data.age || '30'}
+          onValueChange={(val) => updateData('age', val)}
+          height={150}
         />
       </View>
 
@@ -407,41 +406,48 @@ const OnboardingScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Weight ({data.unitSystem === 'metric' ? 'kg' : 'lbs'})</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="0"
-          value={data.weight}
-          onChangeText={(text) => updateData('weight', text)}
-          keyboardType="decimal-pad"
+        <ScrollWheelPicker
+          items={
+            data.unitSystem === 'metric'
+              ? Array.from({ length: 171 }, (_, i) => (i + 30).toString()) // 30-200
+              : Array.from({ length: 391 }, (_, i) => (i + 60).toString()) // 60-450
+          }
+          initialValue={data.weight || (data.unitSystem === 'metric' ? '70' : '150')}
+          onValueChange={(val) => updateData('weight', val)}
+          height={150}
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Height</Text>
         {data.unitSystem === 'metric' ? (
-          <TextInput
-            style={styles.input}
-            placeholder="cm"
-            value={data.height}
-            onChangeText={(text) => updateData('height', text)}
-            keyboardType="number-pad"
+          <ScrollWheelPicker
+            items={Array.from({ length: 151 }, (_, i) => (i + 100).toString())} // 100-250
+            initialValue={data.height || '170'}
+            onValueChange={(val) => updateData('height', val)}
+            height={150}
+            label="cm"
           />
         ) : (
           <View style={styles.imperialHeightContainer}>
-            <TextInput
-              style={[styles.input, { flex: 1, marginRight: 8 }]}
-              placeholder="ft"
-              value={data.height}
-              onChangeText={(text) => updateData('height', text)}
-              keyboardType="number-pad"
-            />
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="in"
-              value={data.heightInches}
-              onChangeText={(text) => updateData('heightInches', text)}
-              keyboardType="number-pad"
-            />
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <ScrollWheelPicker
+                items={['3', '4', '5', '6', '7', '8']}
+                initialValue={data.height || '5'}
+                onValueChange={(val) => updateData('height', val)}
+                height={150}
+                label="ft"
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <ScrollWheelPicker
+                items={Array.from({ length: 12 }, (_, i) => i.toString())}
+                initialValue={data.heightInches || '8'}
+                onValueChange={(val) => updateData('heightInches', val)}
+                height={150}
+                label="in"
+              />
+            </View>
           </View>
         )}
       </View>
@@ -792,12 +798,14 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: colors.background.card,
-    padding: 16,
+    paddingHorizontal: 16,
+    height: 52,
     borderRadius: 12,
     fontSize: 16,
     color: colors.text.primary,
     borderWidth: 1,
     borderColor: colors.gray[200],
+    textAlignVertical: 'center',
   },
   genderContainer: {
     flexDirection: 'row',

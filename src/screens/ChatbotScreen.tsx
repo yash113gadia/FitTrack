@@ -77,7 +77,7 @@ const MAX_STORED_SESSIONS = 10;
 // SYSTEM PROMPT
 // ============================================================================
 
-const SYSTEM_PROMPT = `You are FitTrack AI, a knowledgeable and supportive nutrition and fitness coach. Your role is to help users achieve their health and fitness goals through personalized guidance.
+const SYSTEM_PROMPT = `You are Whole Fit AI, a knowledgeable and supportive nutrition and fitness coach. Your role is to help users achieve their health and fitness goals through personalized guidance.
 
 PERSONALITY:
 - Be encouraging, positive, and motivational
@@ -522,7 +522,7 @@ const ChatbotScreen: React.FC = () => {
     const welcomeMessage: ExtendedChatMessage = {
       id: generateMessageId(),
       role: 'assistant',
-      content: `Hello! 👋 I'm FitTrack AI, your personal nutrition and fitness coach. I'm here to help you reach your health goals!\n\nI can help you with:\n• Understanding your macros and calories\n• Meal planning and food suggestions\n• Exercise tips and motivation\n• Answering nutrition questions\n\nHow can I help you today?`,
+      content: `Hello! 👋 I'm Whole Fit AI, your personal nutrition and fitness coach. I'm here to help you reach your health goals!\n\nI can help you with:\n• Understanding your macros and calories\n• Meal planning and food suggestions\n• Exercise tips and motivation\n• Answering nutrition questions\n\nHow can I help you today?`,
       timestamp: new Date().toISOString(),
       suggestedFollowUps: [
         'How should I start tracking my food?',
@@ -769,7 +769,7 @@ const ChatbotScreen: React.FC = () => {
   const handleShare = async (content: string) => {
     try {
       await Share.share({
-        message: `From FitTrack AI:\n\n${content}`,
+        message: `From Whole Fit AI:\n\n${content}`,
       });
     } catch (error) {
       console.error('Error sharing:', error);
@@ -805,7 +805,7 @@ const ChatbotScreen: React.FC = () => {
           </TouchableOpacity>
           
           <View className="flex-1 items-center">
-            <Text className="text-lg font-semibold text-gray-900 dark:text-white">FitTrack AI</Text>
+            <Text className="text-lg font-semibold text-gray-900 dark:text-white">Whole Fit AI</Text>
             <View className="flex-row items-center">
               <View className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />
               <Text className="text-xs text-gray-500 dark:text-gray-400">
@@ -909,8 +909,11 @@ const ChatbotScreen: React.FC = () => {
 
         {/* Input Area */}
         <View className="px-4 pt-3 pb-32 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-          <View className="flex-row items-end gap-3">
-            <View className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-3xl px-4 py-2 min-h-[44px] max-h-[120px]">
+          <View className="flex-row items-center gap-3">
+            <View 
+              className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-3xl px-4"
+              style={{ minHeight: 48, maxHeight: 120, justifyContent: 'center' }}
+            >
               <TextInput
                 ref={inputRef}
                 value={inputText}
@@ -919,7 +922,7 @@ const ChatbotScreen: React.FC = () => {
                 placeholderTextColor={colors.gray[400]}
                 multiline
                 className="text-gray-800 dark:text-gray-100 text-base"
-                style={{ maxHeight: 100 }}
+                style={{ maxHeight: 100, paddingVertical: 12 }}
                 onFocus={() => setShowQuickQuestions(false)}
                 editable={!isLoading}
               />
@@ -983,7 +986,7 @@ const ChatbotScreen: React.FC = () => {
         >
           <View className="p-4">
             <Text className="text-gray-600 dark:text-gray-400 mb-6">
-              Start a fresh conversation with FitTrack AI. Your current messages will be saved in history.
+              Start a fresh conversation with Whole Fit AI. Your current messages will be saved in history.
             </Text>
             <View className="flex-row" style={{ gap: 12 }}>
               <TouchableOpacity

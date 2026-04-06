@@ -24,6 +24,8 @@ interface UserSlice {
   goals: DailyGoals;
   userLoading: boolean;
   userError: string | null;
+  isAuthenticated: boolean;
+  isGuest: boolean;
 }
 
 interface UserActions {
@@ -32,6 +34,8 @@ interface UserActions {
   updateUser: (updates: Partial<UserProfile>) => Promise<void>;
   updateGoals: (goals: Partial<DailyGoals>) => Promise<void>;
   resetUser: () => void;
+  login: (email: string, password: string, isGuest?: boolean) => Promise<boolean>;
+  logout: () => Promise<void>;
 }
 
 interface DailyLogSlice {
@@ -109,6 +113,8 @@ const initialUserState: UserSlice = {
   goals: { calories: 2000, protein: 150, fats: 70, carbs: 200 },
   userLoading: false,
   userError: null,
+  isAuthenticated: false,
+  isGuest: false,
 };
 
 const initialDailyLogState: DailyLogSlice = {
@@ -229,7 +235,74 @@ export const useAppStore = create<AppStore>()(
           state.user = null;
           state.goals = initialUserState.goals;
           state.userError = null;
+          state.isAuthenticated = false;
+          state.isGuest = false;
         });
+      },
+
+      login: async (email, password, isGuest = false) => {
+        set((state) => { state.userLoading = true; state.userError = null; });
+        try {
+          // For demo purposes, accept any email/password
+          // In production, this would authenticate with a backend API
+          
+          // Store auth state
+          await AsyncStorage.setItem('@fittrack_auth_email', email);
+          await AsyncStorage.setItem('@fittrack_is_guest', isGuest.toString());
+          
+          set((state) => {
+            state.isAuthenticated = true;
+            state.isGuest = isGuest;
+            state.userLoading = false;
+          });
+          
+          // Only load existing user if NOT guest
+          // Guest users should always go through onboarding
+          if (!isGuest) {
+            const user = await databaseService.getUser(USER_ID);
+            if (user) {
+              set((state) => {
+                state.user = user;
+                state.goals = {
+                  calories: user.dailyCalorieGoal,
+                  protein: user.dailyProteinGoal,
+                  fats: user.dailyFatGoal || 0,
+                  carbs: user.dailyCarbGoal || 0,
+                };
+              });
+            }
+          }
+          
+          return true;
+        } catch (error) {
+          set((state) => {
+            state.userError = (error as Error).message;
+            state.userLoading = false;
+            state.isAuthenticated = false;
+          });
+          return false;
+        }
+      },
+
+      logout: async () => {
+        try {
+          // Clear auth data
+          await AsyncStorage.removeItem('@fittrack_auth_email');
+          await AsyncStorage.removeItem('@fittrack_is_guest');
+          
+          // Reset all state
+          set((state) => {
+            Object.assign(state, initialUserState);
+            Object.assign(state, initialDailyLogState);
+            Object.assign(state, initialStreakState);
+            Object.assign(state, initialReminderState);
+            state.isAuthenticated = false;
+            state.isGuest = false;
+          });
+        } catch (error) {
+          console.error('Logout error:', error);
+          throw error;
+        }
       },
 
       // ========== Daily Log Actions ==========
@@ -450,6 +523,8 @@ export const useAppStore = create<AppStore>()(
         isPremium: state.isPremium,
         premiumTrialUsed: state.premiumTrialUsed,
         aiUsageCount: state.aiUsageCount,
+        isAuthenticated: state.isAuthenticated,
+        isGuest: state.isGuest,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
